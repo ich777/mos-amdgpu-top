@@ -97,7 +97,6 @@ jobs:
           Version: ${VERSION}-1+mos-plugin
           Architecture: amd64
           Maintainer: admin@minenet.at
-          Depends: libdrm2 (included in this package "libdrm-amdgpu1")
           Description: AMD GPU Top Plugin for MOS
           EOF
 
