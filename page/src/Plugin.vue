@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="mb-4">AMD-GPU-TOP Plugin</h2>
+    <h2 class="mb-4">amdgpu TOP Plugin</h2>
     <v-skeleton-loader v-if="loading" :loading="true" type="card" />
     <v-card v-else-if="!isConfigured" class="mb-4 pa-0">
       <v-card-text class="pa-4">
@@ -35,31 +35,31 @@
           </v-row>
           <v-divider class="mt-2 mb-2" />
           <v-row dense>
-            <v-col v-if="gpuData[gpu.pci].Sensors?.['Edge Temperature']?.value !== null" cols="6" md="3">
+            <v-col v-if="gpuData[gpu.pci].Sensors?.['Edge Temperature']?.value != null" cols="6" md="3">
               <div class="text-caption text-medium-emphasis"><strong>Temperature</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['Edge Temperature'].value }} °C</div>
             </v-col>
-            <v-col v-if="gpuData[gpu.pci].Sensors?.['Junction Temperature']?.value !== null" cols="6" md="3">
+            <v-col v-if="gpuData[gpu.pci].Sensors?.['Junction Temperature']?.value != null" cols="6" md="3">
               <div class="text-caption text-medium-emphasis"><strong>Junction Temp</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['Junction Temperature'].value }} °C</div>
             </v-col>
-            <v-col v-if="gpuData[gpu.pci].Sensors?.['Average Power']?.value !== null" cols="6" md="3">
+            <v-col v-if="gpuData[gpu.pci].Sensors?.['Average Power']?.value != null" cols="6" md="3">
               <div class="text-caption text-medium-emphasis"><strong>Average Power</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['Average Power'].value }} W</div>
             </v-col>
-            <v-col v-if="gpuData[gpu.pci].Sensors?.['Input Power']?.value !== null" cols="6" md="3">
+            <v-col v-if="gpuData[gpu.pci].Sensors?.['Input Power']?.value != null" cols="6" md="3">
               <div class="text-caption text-medium-emphasis"><strong>Input Power</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['Input Power'].value }} W</div>
             </v-col>
-            <v-col v-if="gpuData[gpu.pci].Sensors?.['GFX_SCLK']?.value !== undefined" cols="6" md="3">
+            <v-col v-if="gpuData[gpu.pci].Sensors?.['GFX_SCLK']?.value != null" cols="6" md="3">
               <div class="text-caption text-medium-emphasis"><strong>GFX Clock</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['GFX_SCLK'].value }} MHz</div>
             </v-col>
-            <v-col v-if="gpuData[gpu.pci].Sensors?.['GFX_MCLK']?.value !== undefined" cols="6" md="3">
+            <v-col v-if="gpuData[gpu.pci].Sensors?.['GFX_MCLK']?.value != null" cols="6" md="3">
               <div class="text-caption text-medium-emphasis"><strong>Memory Clock</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['GFX_MCLK'].value }} MHz</div>
             </v-col>
-            <v-col v-if="gpuData[gpu.pci].Sensors?.['Fan']?.value !== null" cols="6" md="3">
+            <v-col v-if="gpuData[gpu.pci].Sensors?.['Fan']?.value != null" cols="6" md="3">
               <div class="text-caption text-medium-emphasis"><strong>Fan Speed</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['Fan'].value }} RPM</div>
             </v-col>
@@ -105,13 +105,13 @@
             <v-col cols="12">
               <div class="text-caption text-medium-emphasis mb-1"><strong>GPU Activity</strong></div>
               <v-row dense>
-                <v-col v-if="gpuData[gpu.pci].gpu_activity.GFX?.value !== null" cols="12" md="4">
+                <v-col v-if="gpuData[gpu.pci].gpu_activity?.GFX?.value != null" cols="12" md="4">
                   <div style="display: flex; align-items: center; gap: 6px">
                     <span class="text-body-2" style="width: 100px"><small><b>GFX</b></small></span>
                     <v-progress-linear
                       :model-value="gpuData[gpu.pci].gpu_activity.GFX.value || 0"
                       height="12"
-                      :color="getActivityColor(gpuData[gpu.pci].gpu_activity.GFX.value)"
+                      :color="gpuData[gpu.pci].gpu_activity.GFX.value >= 90 ? 'red' : gpuData[gpu.pci].gpu_activity.GFX.value >= 75 ? 'orange' : 'green'"
                       style="border-radius: 6px; overflow: hidden; flex: 1"
                     >
                       <template #default>
@@ -120,13 +120,13 @@
                     </v-progress-linear>
                   </div>
                 </v-col>
-                <v-col v-if="gpuData[gpu.pci].gpu_activity.MediaEngine?.value !== null" cols="12" md="4">
+                <v-col v-if="gpuData[gpu.pci].gpu_activity?.MediaEngine?.value != null" cols="12" md="4">
                   <div style="display: flex; align-items: center; gap: 6px">
                     <span class="text-body-2" style="width: 100px"><small><b>Media</b></small></span>
                     <v-progress-linear
                       :model-value="gpuData[gpu.pci].gpu_activity.MediaEngine.value || 0"
                       height="12"
-                      :color="getActivityColor(gpuData[gpu.pci].gpu_activity.MediaEngine.value)"
+                      :color="gpuData[gpu.pci].gpu_activity.MediaEngine.value >= 90 ? 'red' : gpuData[gpu.pci].gpu_activity.MediaEngine.value >= 75 ? 'orange' : 'green'"
                       style="border-radius: 6px; overflow: hidden; flex: 1"
                     >
                       <template #default>
@@ -135,13 +135,13 @@
                     </v-progress-linear>
                   </div>
                 </v-col>
-                <v-col v-if="gpuData[gpu.pci].gpu_activity.Memory?.value !== null" cols="12" md="4">
+                <v-col v-if="gpuData[gpu.pci].gpu_activity?.Memory?.value != null" cols="12" md="4">
                   <div style="display: flex; align-items: center; gap: 6px">
                     <span class="text-body-2" style="width: 100px"><small><b>Memory</b></small></span>
                     <v-progress-linear
                       :model-value="gpuData[gpu.pci].gpu_activity.Memory.value || 0"
                       height="12"
-                      :color="getActivityColor(gpuData[gpu.pci].gpu_activity.Memory.value)"
+                      :color="gpuData[gpu.pci].gpu_activity.Memory.value >= 90 ? 'red' : gpuData[gpu.pci].gpu_activity.Memory.value >= 75 ? 'orange' : 'green'"
                       style="border-radius: 6px; overflow: hidden; flex: 1"
                     >
                       <template #default>
@@ -164,7 +164,7 @@
                       <v-progress-linear
                         :model-value="engine.value || 0"
                         height="10"
-                        :color="getActivityColor(engine.value)"
+                        :color="engine.value >= 90 ? 'red' : engine.value >= 75 ? 'orange' : 'green'"
                         style="border-radius: 4px; overflow: hidden; flex: 1"
                       />
                       <span class="text-caption" style="width: 40px; text-align: right; flex-shrink: 0">{{ engine.value || 0 }}%</span>
@@ -185,7 +185,7 @@
                       <v-progress-linear
                         :model-value="engine.value || 0"
                         height="10"
-                        :color="getActivityColor(engine.value)"
+                        :color="engine.value >= 90 ? 'red' : engine.value >= 75 ? 'orange' : 'green'"
                         style="border-radius: 4px; overflow: hidden; flex: 1"
                       />
                       <span class="text-caption" style="width: 40px; text-align: right; flex-shrink: 0">{{ engine.value || 0 }}%</span>
@@ -211,7 +211,7 @@
                         <v-progress-linear
                           :model-value="proc.usage.usage.GFX.value || 0"
                           height="10"
-                          :color="getActivityColor(proc.usage.usage.GFX.value)"
+                          :color="proc.usage.usage.GFX.value >= 90 ? 'red' : proc.usage.usage.GFX.value >= 75 ? 'orange' : 'green'"
                           style="border-radius: 4px; overflow: hidden; flex: 1"
                         />
                         <span class="text-caption" style="width: 40px; text-align: right; flex-shrink: 0">{{ proc.usage.usage.GFX.value || 0 }}%</span>
@@ -223,7 +223,7 @@
                         <v-progress-linear
                           :model-value="proc.usage.usage.Compute.value || 0"
                           height="10"
-                          :color="getActivityColor(proc.usage.usage.Compute.value)"
+                          :color="proc.usage.usage.Compute.value >= 90 ? 'red' : proc.usage.usage.Compute.value >= 75 ? 'orange' : 'green'"
                           style="border-radius: 4px; overflow: hidden; flex: 1"
                         />
                         <span class="text-caption" style="width: 40px; text-align: right; flex-shrink: 0">{{ proc.usage.usage.Compute.value || 0 }}%</span>
@@ -329,12 +329,6 @@ const validateInterval = () => {
   if (settingsDialog.interval < 1) {
     settingsDialog.interval = 1;
   }
-};
-
-const getActivityColor = (value) => {
-  if (value >= 90) return 'red';
-  if (value >= 75) return 'orange';
-  return 'green';
 };
 
 const getVramPercent = (pci) => {
