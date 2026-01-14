@@ -1,6 +1,6 @@
 export default {
   name: 'amdgpu-top',
-  displayName: 'AMD GPU Top',
+  displayName: 'amdgpu Top',
   description: 'Monitor AMD GPU usage and performance metrics',
   version: '0.0.0',
   icon: '',
