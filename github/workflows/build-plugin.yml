@@ -1,0 +1,144 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - '[0-9]*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '0.0.1'
+        required: true
+        default: '0.0.1'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install libdrm-dev libdrm-amdgpu1 jq wget
+
+      - name: Setup Rust
+        uses: dtolnay/rust-action@stable
+
+      - name: Get latest amdgpu_top version
+        id: amdgpu-version
+        run: |
+          REPO_V=$(wget -qO- "https://api.github.com/repos/Umio-Yasuno/amdgpu_top/releases/latest" | jq -r '.tag_name')
+          echo "AMDGPU_VERSION=$REPO_V" >> $GITHUB_OUTPUT
+          echo "Using amdgpu_top version: $REPO_V"
+
+      - name: Clone and build amdgpu_top
+        run: |
+          git clone https://github.com/Umio-Yasuno/amdgpu_top.git
+          cd amdgpu_top
+          git checkout ${{ steps.amdgpu-version.outputs.AMDGPU_VERSION }}
+
+          cargo build --release --locked --no-default-features --features="json,tui"
+
+      - name: Download AMD icon
+        run: wget -O icon.png "https://raw.githubusercontent.com/ich777/docker-templates/master/ich777/images/radeontop.png"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build Vue plugin
+        working-directory: page
+        env:
+          PLUGIN_VERSION: ${{ steps.version.outputs.VERSION }}
+        run: |
+          npm install
+          npm run build
+
+      - name: Create package structure
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          PKG_NAME="amdgpu_top-${VERSION}-1+mos-plugin"
+          PKG_DIR="${PKG_NAME}_amd64"
+
+          mkdir -p ${PKG_DIR}/usr/bin
+          mkdir -p ${PKG_DIR}/usr/bin/plugins
+          mkdir -p ${PKG_DIR}/usr/lib/amdgpu-top
+          mkdir -p ${PKG_DIR}/var/www/mos-plugins/amdgpu-top
+          mkdir -p ${PKG_DIR}/DEBIAN
+
+          cp amdgpu_top/target/release/amdgpu_top ${PKG_DIR}/usr/bin/
+          chmod +x ${PKG_DIR}/usr/bin/amdgpu_top
+
+          cp /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.* ${PKG_DIR}/usr/lib/amdgpu-top/
+
+          ln -s /usr/bin/amdgpu_top ${PKG_DIR}/usr/bin/plugins/amdgpu_top
+
+          cp -R page/dist/amdgpu-top/* ${PKG_DIR}/var/www/mos-plugins/amdgpu-top/
+
+          cp icon.png ${PKG_DIR}/var/www/mos-plugins/amdgpu-top/
+
+          cat > ${PKG_DIR}/DEBIAN/control << EOF
+          Package: amdgpu-top
+          Version: ${VERSION}-1+mos-plugin
+          Architecture: amd64
+          Maintainer: admin@minenet.at
+          Depends: libdrm2 (included in this package "libdrm-amdgpu1")
+          Description: AMD GPU Top Plugin for MOS
+          EOF
+
+          cat > ${PKG_DIR}/DEBIAN/postinst << 'EOF'
+          #!/bin/bash
+          chmod +x /usr/bin/amdgpu_top
+          ldconfig /usr/lib/amdgpu-top
+          exit 0
+          EOF
+          chmod +x ${PKG_DIR}/DEBIAN/postinst
+
+          cat > ${PKG_DIR}/DEBIAN/postrm << 'EOF'
+          #!/bin/bash
+          ldconfig
+          exit 0
+          EOF
+          chmod +x ${PKG_DIR}/DEBIAN/postrm
+
+      - name: Build .deb package
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          PKG_NAME="amdgpu_top-${VERSION}-1+mos-plugin"
+          PKG_DIR="${PKG_NAME}_amd64"
+          DEB_FILE="${PKG_NAME}_amd64.deb"
+
+          dpkg-deb --build ${PKG_DIR}
+
+          md5sum ${DEB_FILE} | awk '{print $1}' > ${DEB_FILE}.md5
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          name: AMD GPU Top ${{ steps.version.outputs.VERSION }}
+          body: |
+            ## AMD GPU Top Plugin ${{ steps.version.outputs.VERSION }}
+
+          files: |
+            amdgpu_top-${{ steps.version.outputs.VERSION }}-1+mos-plugin_amd64.deb
+            amdgpu_top-${{ steps.version.outputs.VERSION }}-1+mos-plugin_amd64.deb.md5
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
