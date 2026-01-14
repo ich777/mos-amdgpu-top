@@ -51,7 +51,7 @@ jobs:
           cd amdgpu_top
           git checkout ${{ steps.amdgpu-version.outputs.AMDGPU_VERSION }}
 
-          cargo build --release --locked --no-default-features --features="json,tui"
+          cargo build --release --locked --features="json"
 
       - name: Download AMD icon
         run: wget -O icon.png "https://raw.githubusercontent.com/ich777/docker-templates/master/ich777/images/radeontop.png"
