@@ -77,6 +77,7 @@ jobs:
 
           mkdir -p ${PKG_DIR}/usr/bin
           mkdir -p ${PKG_DIR}/usr/bin/plugins
+          mkdir -p ${PKG_DIR}/usr/share/docs/amdgpu_top
           mkdir -p ${PKG_DIR}/usr/lib/amdgpu-top
           mkdir -p ${PKG_DIR}/var/www/mos-plugins/amdgpu-top
           mkdir -p ${PKG_DIR}/DEBIAN
@@ -85,6 +86,8 @@ jobs:
           chmod +x ${PKG_DIR}/usr/bin/amdgpu_top
 
           cp /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.* ${PKG_DIR}/usr/lib/amdgpu-top/
+
+          cp amdgpu_top/LICENSE ${PKG_DIR}/usr/share/docs/amdgpu_top/
 
           ln -s /usr/bin/amdgpu_top ${PKG_DIR}/usr/bin/plugins/amdgpu_top
 
