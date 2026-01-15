@@ -87,7 +87,7 @@ jobs:
 
           cp /usr/lib/x86_64-linux-gnu/libdrm_amdgpu.so.* ${PKG_DIR}/usr/lib/amdgpu-top/
 
-          cp amdgpu_top/LICENSE ${PKG_DIR}/usr/share/doc/amdgpu_top/
+          cp amdgpu_top/LICENSE ${PKG_DIR}/usr/share/doc/amdgpu_top/LICENSE
 
           ln -s /usr/bin/amdgpu_top ${PKG_DIR}/usr/bin/plugins/amdgpu_top
 
