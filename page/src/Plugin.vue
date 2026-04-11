@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h2 class="mb-4">amdgpu TOP Plugin</h2>
+    <h2 class="mb-4">{{ $t('plugin_amdgpu_top.title') }}</h2>
     <v-skeleton-loader v-if="loading" :loading="true" type="card" />
     <v-card v-else-if="!isConfigured" class="mb-4 pa-0">
       <v-card-text class="pa-4">
-        Please configure the plugin first to display GPU data.
+        {{ $t('plugin_amdgpu_top.not_configured_hint') }}
       </v-card-text>
     </v-card>
     <div v-else style="margin-bottom: 80px">
@@ -17,54 +17,54 @@
         <v-card-text v-if="gpuData[gpu.pci]" class="pa-4">
           <v-row dense>
             <v-col v-if="gpuData[gpu.pci].Info?.['Chip Class']" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Chip Class</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_amdgpu_top.chip_class') }}</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Info['Chip Class'] }}</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].Info?.['GPU Type']" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>GPU Type</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_amdgpu_top.gpu_type') }}</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Info['GPU Type'] }}</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].Info?.['VRAM Type']" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>VRAM Type</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_amdgpu_top.vram_type') }}</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Info['VRAM Type'] }}</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].Info?.['Total Compute Unit']" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Compute Units</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_amdgpu_top.compute_units') }}</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Info['Total Compute Unit'] }}</div>
             </v-col>
           </v-row>
           <v-divider class="mt-2 mb-2" />
           <v-row dense>
             <v-col v-if="gpuData[gpu.pci].Sensors?.['Edge Temperature']?.value != null" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Temperature</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_amdgpu_top.temperature') }}</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['Edge Temperature'].value }} °C</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].Sensors?.['Junction Temperature']?.value != null" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Junction Temp</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_amdgpu_top.junction_temp') }}</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['Junction Temperature'].value }} °C</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].Sensors?.['Average Power']?.value != null" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Average Power</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_amdgpu_top.average_power') }}</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['Average Power'].value }} W</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].Sensors?.['Input Power']?.value != null" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Input Power</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_amdgpu_top.input_power') }}</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['Input Power'].value }} W</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].Sensors?.['GFX_SCLK']?.value != null" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>GFX Clock</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_amdgpu_top.gfx_clock') }}</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['GFX_SCLK'].value }} MHz</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].Sensors?.['GFX_MCLK']?.value != null" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Memory Clock</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_amdgpu_top.memory_clock') }}</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['GFX_MCLK'].value }} MHz</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].Sensors?.['Fan']?.value != null" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Fan Speed</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_amdgpu_top.fan_speed') }}</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['Fan'].value }} RPM</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].Sensors?.['Power Profile']" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Power Profile</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_amdgpu_top.power_profile') }}</strong></div>
               <div class="text-body-2">{{ gpuData[gpu.pci].Sensors['Power Profile'] }}</div>
             </v-col>
           </v-row>
@@ -72,7 +72,7 @@
           <v-row v-if="gpuData[gpu.pci].VRAM" dense>
             <v-col cols="12" md="6">
               <div class="d-flex align-center mb-1">
-                <span class="text-caption" style="width: 80px"><strong>VRAM:</strong></span>
+                <span class="text-caption" style="width: 80px"><strong>{{ $t('plugin_amdgpu_top.vram') }}:</strong></span>
                 <v-progress-linear
                   :model-value="getVramPercent(gpu.pci)"
                   height="16"
@@ -87,7 +87,7 @@
             </v-col>
             <v-col cols="12" md="6">
               <div class="d-flex align-center mb-1">
-                <span class="text-caption" style="width: 80px"><strong>GTT:</strong></span>
+                <span class="text-caption" style="width: 80px"><strong>{{ $t('plugin_amdgpu_top.gtt') }}:</strong></span>
                 <v-progress-linear
                   :model-value="getGttPercent(gpu.pci)"
                   height="16"
@@ -103,11 +103,11 @@
           </v-row>
           <v-row v-if="gpuData[gpu.pci].gpu_activity" dense class="mt-2">
             <v-col cols="12">
-              <div class="text-caption text-medium-emphasis mb-1"><strong>GPU Activity</strong></div>
+              <div class="text-caption text-medium-emphasis mb-1"><strong>{{ $t('plugin_amdgpu_top.gpu_activity') }}</strong></div>
               <v-row dense>
                 <v-col v-if="gpuData[gpu.pci].gpu_activity?.GFX?.value != null" cols="12" md="4">
                   <div style="display: flex; align-items: center; gap: 6px">
-                    <span class="text-body-2" style="width: 100px"><small><b>GFX</b></small></span>
+                    <span class="text-body-2" style="width: 100px"><small><b>{{ $t('plugin_amdgpu_top.gfx') }}</b></small></span>
                     <v-progress-linear
                       :model-value="gpuData[gpu.pci].gpu_activity.GFX.value || 0"
                       height="12"
@@ -122,7 +122,7 @@
                 </v-col>
                 <v-col v-if="gpuData[gpu.pci].gpu_activity?.MediaEngine?.value != null" cols="12" md="4">
                   <div style="display: flex; align-items: center; gap: 6px">
-                    <span class="text-body-2" style="width: 100px"><small><b>Media</b></small></span>
+                    <span class="text-body-2" style="width: 100px"><small><b>{{ $t('plugin_amdgpu_top.media') }}</b></small></span>
                     <v-progress-linear
                       :model-value="gpuData[gpu.pci].gpu_activity.MediaEngine.value || 0"
                       height="12"
@@ -137,7 +137,7 @@
                 </v-col>
                 <v-col v-if="gpuData[gpu.pci].gpu_activity?.Memory?.value != null" cols="12" md="4">
                   <div style="display: flex; align-items: center; gap: 6px">
-                    <span class="text-body-2" style="width: 100px"><small><b>Memory</b></small></span>
+                    <span class="text-body-2" style="width: 100px"><small><b>{{ $t('plugin_amdgpu_top.memory') }}</b></small></span>
                     <v-progress-linear
                       :model-value="gpuData[gpu.pci].gpu_activity.Memory.value || 0"
                       height="12"
@@ -156,7 +156,7 @@
           <v-row v-if="gpuData[gpu.pci].GRBM && hasGrbmData(gpu.pci)" dense class="mt-2">
             <v-col cols="12">
               <details>
-                <summary style="cursor: pointer; color: var(--v-theme-primary); text-decoration: underline" class="text-body-2 mb-1">GRBM Engines</summary>
+                <summary style="cursor: pointer; color: var(--v-theme-primary); text-decoration: underline" class="text-body-2 mb-1">{{ $t('plugin_amdgpu_top.grbm_engines') }}</summary>
                 <v-row dense class="mt-1">
                   <v-col v-for="(engine, engineName) in gpuData[gpu.pci].GRBM" :key="engineName" cols="6" md="4">
                     <div style="display: flex; align-items: center; gap: 6px">
@@ -177,7 +177,7 @@
           <v-row v-if="gpuData[gpu.pci].GRBM2 && hasGrbm2Data(gpu.pci)" dense class="mt-2">
             <v-col cols="12">
               <details>
-                <summary style="cursor: pointer; color: var(--v-theme-primary); text-decoration: underline" class="text-body-2 mb-1">GRBM2 Engines</summary>
+                <summary style="cursor: pointer; color: var(--v-theme-primary); text-decoration: underline" class="text-body-2 mb-1">{{ $t('plugin_amdgpu_top.grbm2_engines') }}</summary>
                 <v-row dense class="mt-1">
                   <v-col v-for="(engine, engineName) in gpuData[gpu.pci].GRBM2" :key="engineName" cols="6" md="4">
                     <div style="display: flex; align-items: center; gap: 6px">
@@ -198,7 +198,7 @@
           <v-row v-if="gpuData[gpu.pci].fdinfo && Object.keys(gpuData[gpu.pci].fdinfo).length > 0" dense class="mt-2">
             <v-col cols="12">
               <details>
-                <summary style="cursor: pointer; color: var(--v-theme-primary); text-decoration: underline" class="text-body-2 mb-1">Processes</summary>
+                <summary style="cursor: pointer; color: var(--v-theme-primary); text-decoration: underline" class="text-body-2 mb-1">{{ $t('plugin_amdgpu_top.processes') }}</summary>
                 <div v-for="(proc, pid) in gpuData[gpu.pci].fdinfo" :key="pid" class="mb-3">
                   <div class="d-flex align-center mb-1">
                     <span class="text-body-2"><b>{{ proc.name || 'Unknown' }}</b></span>
@@ -248,18 +248,18 @@
           </v-row>
         </v-card-text>
         <v-card-text v-else class="text-center pa-8 text-grey">
-          Loading data...
+          {{ $t('plugin_amdgpu_top.loading') }}
         </v-card-text>
       </v-card>
     </div>
     <v-dialog v-model="settingsDialog.value" max-width="600">
       <v-card class="pa-0">
-        <v-card-title>Settings</v-card-title>
+        <v-card-title>{{ $t('plugin_amdgpu_top.settings') }}</v-card-title>
         <v-card-text>
           <v-form>
             <v-text-field
               v-model.number="settingsDialog.interval"
-              label="Update interval (seconds)"
+              :label="$t('plugin_amdgpu_top.update_interval')"
               type="number"
               min="1"
               @blur="validateInterval"
@@ -269,7 +269,7 @@
               :items="availableGpusItems"
               item-title="title"
               item-value="value"
-              label="GPUs"
+              :label="$t('plugin_amdgpu_top.gpus')"
               multiple
               chips
               clearable
@@ -278,8 +278,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="onPrimary" @click="settingsDialog.value = false">Cancel</v-btn>
-          <v-btn color="onPrimary" @click="saveSettings" :loading="settingsDialog.saving">Save</v-btn>
+          <v-btn color="onPrimary" @click="settingsDialog.value = false">{{ $t('plugin_amdgpu_top.cancel') }}</v-btn>
+          <v-btn color="onPrimary" @click="saveSettings" :loading="settingsDialog.saving">{{ $t('plugin_amdgpu_top.save') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

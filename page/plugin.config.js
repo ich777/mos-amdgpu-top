@@ -6,4 +6,5 @@ export default {
   icon: '',
   author: 'ich777',
   homepage: 'https://github.com/Umio-Yasuno/amdgpu_top',
+  widget: true,
 };
