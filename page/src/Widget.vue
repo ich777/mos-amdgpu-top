@@ -47,6 +47,19 @@
               </template>
             </v-progress-linear>
           </div>
+          <div v-if="gpuData[gpu.pci].VRAM?.['Total GTT']" class="d-flex align-center mb-1" style="gap: 6px">
+            <span class="text-caption" style="width: 80px; flex-shrink: 0"><b>GTT</b></span>
+            <v-progress-linear
+              :model-value="getGttPercent(gpu.pci)"
+              height="10"
+              :color="getGttPercent(gpu.pci) >= 90 ? 'red' : getGttPercent(gpu.pci) >= 75 ? 'orange' : 'green'"
+              style="border-radius: 5px; overflow: hidden; flex: 1"
+            >
+              <template #default>
+                <span style="font-size: 9px">{{ getGttPercent(gpu.pci).toFixed(0) }}%</span>
+              </template>
+            </v-progress-linear>
+          </div>
           <div v-if="gpuData[gpu.pci].gpu_activity?.GFX?.value != null" class="d-flex align-center mb-1" style="gap: 6px">
             <span class="text-caption" style="width: 80px; flex-shrink: 0"><small>GFX</small></span>
             <v-progress-linear
@@ -73,9 +86,59 @@
               </template>
             </v-progress-linear>
           </div>
-          <div v-if="getProcessCount(gpu.pci) > 0" class="text-caption text-medium-emphasis mt-1">
-            <v-icon size="12">mdi-application-outline</v-icon>
-            {{ getProcessCount(gpu.pci) }} {{ getProcessCount(gpu.pci) === 1 ? $t('plugin_amdgpu_top.process') : $t('plugin_amdgpu_top.processes') }}
+          <div class="mt-1">
+            <div v-if="getProcessCount(gpu.pci) === 0" class="text-caption text-medium-emphasis">
+              <v-icon size="12" class="mr-1">mdi-application-outline</v-icon>
+              0 {{ $t('plugin_amdgpu_top.processes') }}
+            </div>
+            <details v-else>
+              <summary style="cursor: pointer; color: var(--v-theme-primary); text-decoration: underline" class="text-body-2 mb-1">
+                <v-icon size="12" class="mr-1">mdi-application-outline</v-icon>
+                {{ getProcessCount(gpu.pci) }} {{ getProcessCount(gpu.pci) === 1 ? $t('plugin_amdgpu_top.process') : $t('plugin_amdgpu_top.processes') }}
+              </summary>
+              <div v-for="(proc, pid) in gpuData[gpu.pci].fdinfo" :key="pid" class="mb-2 ml-1">
+                <div class="d-flex align-center mb-1">
+                  <span class="text-caption"><b>{{ proc.name || 'Unknown' }}</b></span>
+                  <span class="text-caption text-medium-emphasis ml-2">PID: {{ pid }}</span>
+                </div>
+                <div v-if="proc.usage?.usage">
+                  <div v-if="proc.usage.usage.GFX" class="d-flex align-center mb-1" style="gap: 6px">
+                    <span class="text-caption" style="width: 80px; flex-shrink: 0"><small>GFX</small></span>
+                    <v-progress-linear
+                      :model-value="proc.usage.usage.GFX.value || 0"
+                      height="10"
+                      :color="proc.usage.usage.GFX.value >= 90 ? 'red' : proc.usage.usage.GFX.value >= 75 ? 'orange' : 'green'"
+                      style="border-radius: 5px; overflow: hidden; flex: 1"
+                    >
+                      <template #default>
+                        <span style="font-size: 9px">{{ proc.usage.usage.GFX.value || 0 }}%</span>
+                      </template>
+                    </v-progress-linear>
+                  </div>
+                  <div v-if="proc.usage.usage.Compute" class="d-flex align-center mb-1" style="gap: 6px">
+                    <span class="text-caption" style="width: 80px; flex-shrink: 0"><small>Compute</small></span>
+                    <v-progress-linear
+                      :model-value="proc.usage.usage.Compute.value || 0"
+                      height="10"
+                      :color="proc.usage.usage.Compute.value >= 90 ? 'red' : proc.usage.usage.Compute.value >= 75 ? 'orange' : 'green'"
+                      style="border-radius: 5px; overflow: hidden; flex: 1"
+                    >
+                      <template #default>
+                        <span style="font-size: 9px">{{ proc.usage.usage.Compute.value || 0 }}%</span>
+                      </template>
+                    </v-progress-linear>
+                  </div>
+                  <div v-if="proc.usage.usage.VRAM" class="d-flex align-center mb-1" style="gap: 6px">
+                    <span class="text-caption" style="width: 80px; flex-shrink: 0"><small>VRAM</small></span>
+                    <span class="text-caption">{{ proc.usage.usage.VRAM.value || 0 }} {{ proc.usage.usage.VRAM.unit }}</span>
+                  </div>
+                  <div v-if="proc.usage.usage.GTT" class="d-flex align-center mb-1" style="gap: 6px">
+                    <span class="text-caption" style="width: 80px; flex-shrink: 0"><small>GTT</small></span>
+                    <span class="text-caption">{{ proc.usage.usage.GTT.value || 0 }} {{ proc.usage.usage.GTT.unit }}</span>
+                  </div>
+                </div>
+              </div>
+            </details>
           </div>
         </div>
         <div v-else class="text-caption text-medium-emphasis text-center pa-2">
@@ -114,6 +177,14 @@ const getVramPercent = (pci) => {
   if (!data?.VRAM) return 0;
   const total = data.VRAM['Total VRAM']?.value || 1;
   const used = data.VRAM['Total VRAM Usage']?.value || 0;
+  return (used / total) * 100;
+};
+
+const getGttPercent = (pci) => {
+  const data = gpuData.value[pci];
+  if (!data?.VRAM) return 0;
+  const total = data.VRAM['Total GTT']?.value || 1;
+  const used = data.VRAM['Total GTT Usage']?.value || 0;
   return (used / total) * 100;
 };
 
